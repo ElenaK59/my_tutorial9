@@ -1,0 +1,52 @@
+<script setup>
+import { computed } from 'vue'
+import TaskItem from './TaskItem.vue'
+import { useTasksUiStore } from '@/stores/useTasksUiStore'
+
+const uiStore = useTasksUiStore()
+const props = defineProps({
+  tasks: {
+    type: Array, // ❗ не Object
+    required: true,
+  },
+})
+const filteredTasks = computed(() => uiStore.getFilteredTasks(props.tasks))
+</script>
+
+<template>
+  <transition-group tag="ul" class="task-list">
+    <template v-for="(task, i) in filteredTasks" :key="task.id">
+      <TaskItem :task="task" :index="i" :column="{ id: 'todo', title: 'Todo' }" />
+    </template>
+  </transition-group>
+</template>
+<style scoped>
+.task-list {
+  list-style: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #d4cfcf;
+  padding: 6px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  flex: 1; /*  заполняет колонку */
+  min-height: 50px;
+}
+.task-move {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.task-enter-active,
+.task-leave-active {
+  transition: all 0.2s ease;
+}
+
+.task-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.task-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>
